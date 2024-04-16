@@ -1,27 +1,25 @@
-name: Ejecutar pruebas unitarias
+name: Publicar Pagina a Surge.sh
 
 on:
- push:
+  push:
     branches:
-      - dev
+      - main
 
 jobs:
- build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+      - name: Clona el repositorio
+        uses: actions/checkout@v3
 
-    - name: Configurar Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'
+      - name: configura nodejs  
+        uses: actions/setup-node@v3
+        with:
+            node-version: '18' 
 
-    - name: Instalar dependencias
-      run: |
-        python -m pip install --upgrade pip
-        pip install pytest Flask-Testing
+      - name: Instala Surge       
+        run: npm install --global surge
 
-    - name: Ejecutar pruebas
-      run: |
-        pytest
+      - name: Publicar pagina
+        run: surge --project ./ --domain ${{ secrets.SURGE_DOMAIN }} --token ${{ secrets.SURGE_API_KEY }}
